@@ -86,157 +86,108 @@ public:
     }
 };
 
-void token_name(TOKEN_SY tok_sy)
+string token_name(TOKEN_SY tok_sy)
 {
     switch(tok_sy)
     {
     case NUMBER_INT_SY:
-        cout << "NUMBER_INT_SY";
-        break;
+        return "NUMBER_INT_SY";
     case NUMBER_FLOAT_SY:
-        cout << "NUMBER_FLOAT_SY";
-        break;
+        return "NUMBER_FLOAT_SY";
     case ID_SY:
-        cout << "ID_SY" ;
-        break;
+        return "ID_SY" ;
     case RETURN_SY:
-        cout << "RETURN_SY" ;
-        break;
+        return "RETURN_SY" ;
     case LBRACE_SY:
-        cout << "LBRACE_SY" ;
-        break;
+        return "LBRACE_SY" ;
     case RBRACE_SY:
-        cout << "RBRACE_SY" ;
-        break;
+        return "RBRACE_SY" ;
     case LPAREN_SY:
-        cout << "LPAREN_SY" ;
-        break;
+        return "LPAREN_SY" ;
     case RPAREN_SY:
-        cout << "RPAREN_SY" ;
-        break;
+        return "RPAREN_SY" ;
     case SEMICOL_SY:
-        cout << "SEMICOL_SY" ;
-        break;
+        return "SEMICOL_SY" ;
     case IF_SY:
-        cout << "IF_SY" ;
-        break;
+        return "IF_SY" ;
     case ELSEIF_SY:
-        cout << "ELSEIF_SY" ;
-        break;
+        return "ELSEIF_SY" ;
     case WHILE_SY:
-        cout << "WHILE_SY" ;
-        break;
+        return "WHILE_SY" ;
     case ELSE_SY:
-        cout << "ELSE_SY" ;
-        break;
+        return "ELSE_SY" ;
     case TRUE_SY:
-        cout << "TRUE_SY" ;
-        break;
+        return "TRUE_SY" ;
     case FALSE_SY:
-        cout << "FALSE_SY" ;
-        break;
+        return "FALSE_SY" ;
     case DOT_SY:
-        cout << "DOT_SY" ;
-        break;
+        return "DOT_SY" ;
     case COMMA_SY:
-        cout << "COMMA_SY" ;
-        break;
+        return "COMMA_SY" ;
     case LESS_SY:
-        cout << "LESS_SY" ;
-        break;
+        return "LESS_SY" ;
     case LESS_EQUAL_SY:
-        cout << "LESS_EQUAL_SY" ;
-        break;
+        return "LESS_EQUAL_SY" ;
     case GREATER_SY:
-        cout << "GREATER_SY" ;
-        break;
+        return "GREATER_SY" ;
     case GREATER_EQUAL_SY:
-        cout << "GREATER_EQUAL_SY" ;
-        break;
+        return "GREATER_EQUAL_SY" ;
     case AND_SY:
-        cout << "AND_SY" ;
-        break;
+        return "AND_SY" ;
     case OR_SY:
-        cout << "OR_SY" ;
-        break;
+        return "OR_SY" ;
     case NOT_EQUAL_SY:
-        cout << "NOT_EQUAL_SY" ;
-        break;
+        return "NOT_EQUAL_SY" ;
     case EQUAL_SY:
-        cout << "EQUAL_SY" ;
-        break;
+        return "EQUAL_SY" ;
     case MULT_SY:
-        cout << "MULT_SY" ;
-        break;
+        return "MULT_SY" ;
     case DIV_SY:
-        cout << "DIV_SY" ;
-        break;
+        return "DIV_SY" ;
     case NOT_SY:
-        cout << "NOT_SY" ;
-        break;
+        return "NOT_SY" ;
     case ASSIGN_SY:
-        cout << "ASSIGN_SY" ;
-        break;
+        return "ASSIGN_SY" ;
     case PLUS_SY:
-        cout << "PLUS_SY" ;
-        break;
+        return "PLUS_SY" ;
     case MINUS_SY:
-        cout << "MINUS_SY" ;
-        break;
+        return "MINUS_SY" ;
     case INT_SY:
-        cout << "INT_SY" ;
-        break;
+        return "INT_SY" ;
     case FLOAT_SY:
-        cout << "FLOAT_SY" ;
-        break;
+        return "FLOAT_SY" ;
     case STRING_SY:
-        cout << "STRING_SY" ;
-        break;
+        return "STRING_SY" ;
     case BOOL_SY:
-        cout << "BOOL_SY" ;
-        break;
+        return "BOOL_SY" ;
     case USER_SY:
-        cout << "USER_SY" ;
-        break;
+        return "USER_SY" ;
     case ALGORITHM_SY:
-        cout << "ALGORITHM_SY" ;
-        break;
+        return "ALGORITHM_SY" ;
     case PATH_SY:
-        cout << "PATH_SY" ;
-        break;
+        return "PATH_SY" ;
     case END_SOURCE_SY:
-        cout << "END_SOURCE_SY" ;
-        break;
+        return "END_SOURCE_SY" ;
     case PRINT_SY:
-        cout << "PRINT_SY" ;
-        break;
+        return "PRINT_SY" ;
     case INPUT_SY:
-        cout << "INPUT_SY" ;
-        break;
+        return "INPUT_SY" ;
     case STRING_CONTENT_SY:
-        cout << "STRING_CONTENT_SY";
-        break;
+        return "STRING_CONTENT_SY";
     case NORET_SY:
-        cout << "NORET_SY" ;
-        break;
+        return "NORET_SY" ;
     case pearsonGroupSize_SY:
-        cout << "pearsonGroupSize_SY" ;
-        break;
+        return "pearsonGroupSize_SY" ;
     case regParameter_SY:
-        cout << "regParameter_SY" ;
-        break;
+        return "regParameter_SY" ;
     case lambda_SY:
-        cout << "lambda_SY" ;
-        break;
+        return "lambda_SY" ;
     case rankRecomendation_SY:
-        cout << "rankRecomendation_SY" ;
-        break;
+        return "rankRecomendation_SY" ;
     case getRecomendation_SY:
-        cout << "getRecomendation_SY" ;
-        break;
+        return "getRecomendation_SY" ;
     default:
-        cout << "ERROR_SY" ;
-        break;
+        return "ERROR_SY" ;
     }
 }
 

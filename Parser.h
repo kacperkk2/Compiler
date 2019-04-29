@@ -17,18 +17,19 @@ class Parser
                                     ALGORITHM_SY, PATH_SY};
     std::list<TOKEN_SY> stmt_first_set = {IF_SY, WHILE_SY, INT_SY, FLOAT_SY, STRING_SY, BOOL_SY, NORET_SY,
                                         USER_SY, ALGORITHM_SY, PATH_SY, RETURN_SY, ID_SY, PRINT_SY};
-    std::list<TOKEN_SY> logic_set = {OR_SY, AND_SY, NOT_EQUAL_SY, EQUAL_SY, LESS_EQUAL_SY, LESS_SY,
-                                    GREATER_SY, GREATER_EQUAL_SY};
-    std::list<TOKEN_SY> arithmetic_set = {MULT_SY, DIV_SY, PLUS_SY, MINUS_SY};
+    //std::list<TOKEN_SY> logic_set = {OR_SY, AND_SY, NOT_EQUAL_SY, EQUAL_SY, LESS_EQUAL_SY, LESS_SY,
+    //                                GREATER_SY, GREATER_EQUAL_SY};
+    //std::list<TOKEN_SY> arithmetic_set = {MULT_SY, DIV_SY, PLUS_SY, MINUS_SY};
     std::list<TOKEN_SY> value_set = {STRING_CONTENT_SY, NUMBER_FLOAT_SY, NUMBER_INT_SY, TRUE_SY, FALSE_SY};
     std::list<TOKEN_SY> embedded_set = {USER_SY, ALGORITHM_SY, PATH_SY};
-    std::list<TOKEN_SY> operator_set = {DOT_SY, COMMA_SY, LESS_SY, LESS_EQUAL_SY, GREATER_SY, GREATER_EQUAL_SY, OR_SY, AND_SY,
-                                        NOT_EQUAL_SY, EQUAL_SY, MULT_SY, DIV_SY, NOT_SY, ASSIGN_SY,
-                                        PLUS_SY, MINUS_SY};
+    //std::list<TOKEN_SY> operator_set = {DOT_SY, COMMA_SY, LESS_SY, LESS_EQUAL_SY, GREATER_SY, GREATER_EQUAL_SY, OR_SY, AND_SY,
+    //                                    NOT_EQUAL_SY, EQUAL_SY, MULT_SY, DIV_SY, NOT_SY, ASSIGN_SY,
+    //                                    PLUS_SY, MINUS_SY};
     std::list<TOKEN_SY> algo_attr_set = {pearsonGroupSize_SY, regParameter_SY, lambda_SY};
     std::list<TOKEN_SY> embedded_fun_set = {rankRecomendation_SY, getRecomendation_SY};
 
-    std::list<TOKEN_SY> expr_operator_set = {OR_SY, AND_SY, MULT_SY, DIV_SY, PLUS_SY, MINUS_SY};
+    std::list<TOKEN_SY> expr_operator_set = {OR_SY, AND_SY, MULT_SY, DIV_SY, PLUS_SY, MINUS_SY,
+                    NOT_EQUAL_SY, EQUAL_SY, LESS_EQUAL_SY, LESS_SY, GREATER_SY, GREATER_EQUAL_SY};
 
     // tutaj nwm co z != == w expresion, TRZEBA JE DODAC DO ACCEPT BO W NODE OPERATION JEST PUSTE DLA NICH
     std::list<TOKEN_SY> expr_operator_high_set = {AND_SY, MULT_SY, DIV_SY, NOT_EQUAL_SY, EQUAL_SY, LESS_EQUAL_SY, LESS_SY,
@@ -46,7 +47,7 @@ public:
     {
         if(token.get_token() == tok_sy)
         {
-            cout<<"Przyjeto token: "; token_name(token.get_token()); cout<<endl;
+            cout<<"Przyjeto token: " << token_name(token.get_token()) <<endl;
             if(is_second_token)
             {
                 token = second_token;
@@ -56,12 +57,15 @@ public:
                 token = lex.get_token(); // moze trzeba sprawdzic czy te token nie jest errorem ????????
         }
         else
-        {
-            lex.error(token); // wypisze komunikat gdzie jest blad
-            cout<<"Napotkano na token: "; token_name(token.get_token()); cout<<endl;
-            cout<<"Oczekiwany token: "; token_name(tok_sy); cout<<endl;
-            exit(0); // czy na pewno wychodzic???
-        }
+            print_error_message("Oczekiwany token: " + token_name(tok_sy));
+    }
+
+    void print_error_message(string message)
+    {
+        lex.error(token); // wypisze komunikat gdzie jest blad
+        cout<<"Napotkano na token: "<< token_name(token.get_token()) <<endl;
+        cout<< message <<endl;
+        exit(0);
     }
 
     void accept(TOKEN_SY tok_sy, Base_node* node)
@@ -70,7 +74,7 @@ public:
         {
             interprete_and_fill_node(node);
 
-            cout<<"Przyjeto token: "; token_name(token.get_token()); cout<<endl;
+            cout<<"Przyjeto token: "<< token_name(token.get_token()) <<endl;
             if(is_second_token)
             {
                 token = second_token;
@@ -80,12 +84,7 @@ public:
                 token = lex.get_token(); // moze trzeba sprawdzic czy te token nie jest errorem ????????
         }
         else
-        {
-            lex.error(token); // wypisze komunikat gdzie jest blad
-            cout<<"Napotkano na token: "; token_name(token.get_token()); cout<<endl;
-            cout<<"Oczekiwany token: "; token_name(tok_sy); cout<<endl;
-            exit(0); // czy na pewno wychodzic???
-        }
+            print_error_message("Oczekiwany token: " + token_name(tok_sy));
     }
 
     void accept(std::list<TOKEN_SY> set_sy)
@@ -94,16 +93,12 @@ public:
             accept(token.get_token()); // token jest w secie
         else
         {
-            lex.error(token); // wypisze komunikat gdzie jest blad
-            cout<<"Napotkano na token: "; token_name(token.get_token()); cout<<endl;
-            cout<<"Oczekiwany token: ";
+            string message = "Oczekiwany token: ";
             //wypisuje tokeny mozliwe ktore sa w secie
             for (auto item : set_sy)
-            {
-                token_name(item); cout << " ";
-            }
-            cout<<endl;
-            exit(0);
+                message = message + token_name(item) + " ";
+
+            print_error_message(message);
         }
     }
 
@@ -113,16 +108,12 @@ public:
             accept(token.get_token(), node); // token jest w secie
         else
         {
-            lex.error(token); // wypisze komunikat gdzie jest blad
-            cout<<"Napotkano na token: "; token_name(token.get_token()); cout<<endl;
-            cout<<"Oczekiwany token: ";
+            string message = "Oczekiwany token: ";
             //wypisuje tokeny mozliwe ktore sa w secie
             for (auto item : set_sy)
-            {
-                token_name(item); cout << " ";
-            }
-            cout<<endl;
-            exit(0);
+                message = message + token_name(item) + " ";
+
+            print_error_message(message);
         }
     }
 
@@ -165,60 +156,6 @@ public:
                         f_node-> id = token.get_str_value();
                         f_node-> got_ret_and_id = true; // teraz bedziemy chcieli parametry
                     }
-                }
-            break;
-            }
-        case OPERATION_NODE:
-            {
-                Operation_node* o_node = (Operation_node*) node;
-
-                if(token.get_token() == NOT_SY || token.get_token() == MINUS_SY)
-                    o_node-> not_simply = true;
-                else // mamy operator laczacy 2 wyrazenia
-                {
-                    switch(token.get_token())
-                    {
-                    case OR_SY:
-                        o_node-> operation = "||";
-                        break;
-                    case AND_SY:
-                        o_node-> operation = "&&";
-                        break;
-                    case NOT_EQUAL_SY:
-                        o_node-> operation = "!=";
-                        break;
-                    case EQUAL_SY:
-                        o_node-> operation = "==";
-                        break;
-                    case LESS_EQUAL_SY:
-                        o_node-> operation = "<=";
-                        break;
-                    case LESS_SY:
-                        o_node-> operation = "<";
-                        break;
-                    case GREATER_SY:
-                        o_node-> operation = ">";
-                        break;
-                    case GREATER_EQUAL_SY:
-                        o_node-> operation = ">=";
-                        break;
-                    // arytmetyczne ---
-                    case MULT_SY:
-                        o_node-> operation = "*";
-                        break;
-                    case DIV_SY:
-                        o_node-> operation = "/";
-                        break;
-                    case PLUS_SY:
-                        o_node-> operation = "+";
-                        break;
-                    case MINUS_SY:
-                        o_node-> operation = "-";
-                        break;
-                    default: break;
-                    }
-
-                    o_node->last = false; // jesli jest operator to znaczy ze bedzie jeszcze jakis za operatorem
                 }
             break;
             }
@@ -454,10 +391,8 @@ public:
         while(token_in_set(type_set))
             p->functions.push_back(FUNCTION());
 
-        // jesli przeszedlem przez wszystkie funkcje a jest cos jeszcze,
-        // to to zle zapisana funkcja, wypisuje ze powinno sie zaczynac od typeset
         if(token.get_token() != END_SOURCE_SY)
-            accept(type_set);
+            print_error_message("Plik moze skladac sie TYLKO z funkcji");
 
         return p;
     }
@@ -519,6 +454,8 @@ public:
             else //if(token.get_token() == ASSIGN_SY)
                 statement = ASSIGN(); // assign moze byc tez tej postaci id.ALGO_ATTR = ..., a nie tylko id = ...
         }
+        else
+            print_error_message("Brak wyrazenia wpisujacego sie w semantyke STATEMENT");
 
         return statement;
     }
@@ -573,6 +510,8 @@ public:
             else
                 simply = ID(); // jesli nic nie dopasowano to to bedzie samo id
         }
+        else
+            print_error_message("Brak wyrazenia wpisujacego sie w semantyke SIMPLY");
 
         return simply;
     }
@@ -628,123 +567,136 @@ public:
         return v_node;
     }
 
-    Expresion_node* LOGIC(Base_node* buffer)
-    {
-        cout<<"----- W LOGIC"<<endl;
-        /*if(token.get_token() == NOT_SY)
-        {
-            accept(NOT_SY, o_node);
-            o_node-> simply.push_back(SIMPLY());
-        }
-        else
-            o_node-> simply.push_back(SIMPLY());*/
-
-        Expresion_node* e_node;
-        if(token_in_set(logic_set))
-        {
-            e_node = build_node(buffer);
-
-            while(token_in_set(logic_set))
-                e_node = build_node(e_node);
-        }
-
-        return e_node;
-    }
-
     Base_node* build_paren()
     {
         accept(LPAREN_SY);
 
+        bool was_neg = false;
+        Expresion_leaf* wrapper = new Expresion_leaf();
+
+        if(token.get_token() == NOT_SY)
+        {
+            wrapper->negation_or_minus = true;
+            accept(NOT_SY);
+            was_neg = true;
+        }
+
+        Base_node* expr;
         if(token.get_token() == LPAREN_SY)
         {
             Base_node* paren = build_paren();
-            Expresion_node* expr = build_node(paren);
+            Expresion_node* expresion = build_node(paren);
             accept(RPAREN_SY);
-            return expr;
+            return expresion;
         }
 
-        Base_node* buffer = SIMPLY();
+        if(was_neg)
+            wrapper -> simply = SIMPLY();
+        else
+            expr = SIMPLY();
+
         // jesli od razu za simply jest ) to znaczy ze jest np (2)
         if(token.get_token() == RPAREN_SY)
         {
             accept(RPAREN_SY);
-            return buffer;
+            return was_neg ? wrapper : expr;
         }
         else
         {
             // zrobi az od )
-            Expresion_node* expr = build_node(buffer);
+            Expresion_node* e_node = was_neg ? build_node(wrapper) : build_node(expr);
             accept(RPAREN_SY);
-            return expr;
+            return e_node;
         }
     }
 
-    // NAWIAS NA PRZODZIE
-    // NEGACJE I MINUSY
-
     Base_node* build_high()
     {
-        Base_node* buffer;
+        bool was_neg = false;
+        Expresion_leaf* wrapper = new Expresion_leaf();
 
+        if(token.get_token() == NOT_SY)
+        {
+            wrapper->negation_or_minus = true;
+            accept(NOT_SY);
+            was_neg = true;
+        }
+
+        Base_node* expr;
         if(token.get_token() == LPAREN_SY)
         {
-            buffer = build_paren();
-            //return buffer;
+            if(was_neg)
+                wrapper -> simply = build_paren();
+            else
+                expr = build_paren();
         }
         else
-            buffer = SIMPLY();
-
-        Expresion_node* expr = nullptr;
+        {
+            if(was_neg)
+                wrapper -> simply = SIMPLY();
+            else
+                expr = SIMPLY();
+        }
 
         if(token_in_set(expr_operator_high_set))
         {
-            expr = new Expresion_node();
-            expr->left = buffer;
-            accept(expr_operator_high_set, expr);
-            expr->right = build_high();
+            Expresion_node* expr_node = new Expresion_node();
+            expr_node->left = was_neg ? wrapper : expr;
+            accept(expr_operator_high_set, expr_node);
+            expr_node->right = build_high();
+            return expr_node;
         }
         else // jesli za wyrazeniem prostym nie ma operatora * to jest to + lub koniec wyrazenia calego, jak plus to kolejne wywolanie pozniej
-        {
-            return buffer;
-        }
-
-        return expr;
+            return was_neg ? wrapper : expr;
     }
 
     Base_node* build_low()
     {
-        Base_node* buffer;
+        bool was_neg = false;
+        Expresion_leaf* wrapper = new Expresion_leaf();
 
+        if(token.get_token() == NOT_SY)
+        {
+            wrapper->negation_or_minus = true;
+            accept(NOT_SY);
+            was_neg = true;
+        }
+
+        Base_node* expr;
         if(token.get_token() == LPAREN_SY)
         {
-            buffer = build_paren();
-            //return buffer;
+            if(was_neg)
+                wrapper -> simply = build_paren();
+            else
+                expr = build_paren();
         }
         else
-            buffer = SIMPLY();
+        {
+            if(was_neg)
+                wrapper -> simply = SIMPLY();
+            else
+                expr = SIMPLY();
+        }
 
-        Expresion_node* expr = nullptr;
-
+        Expresion_node* expr_node = nullptr;
         if(token_in_set(expr_operator_low_set))
         {
-            expr = new Expresion_node();
-            expr->left = buffer;
-            accept(expr_operator_low_set, expr);
-            expr->right = build_low();
+            expr_node = new Expresion_node();
+            expr_node->left = was_neg ? wrapper : expr;
+            accept(expr_operator_low_set, expr_node);
+            expr_node->right = build_low();
         }
         else if(token_in_set(expr_operator_high_set))
         {
-            expr = new Expresion_node();
-            expr->left = buffer;
-            accept(expr_operator_high_set, expr);
-            expr->right = build_high();
+            expr_node = new Expresion_node();
+            expr_node->left = was_neg ? wrapper : expr;
+            accept(expr_operator_high_set, expr_node);
+            expr_node->right = build_high();
         }
         else // jesli za wyrazeniem prostym nie ma operatora to jest to koniec wyrazenia calego
-        {
-            return buffer;
-        }
+            return was_neg ? wrapper : expr;
 
-        return expr;
+        return expr_node;
     }
 
     Expresion_node* build_node(Base_node* node)
@@ -761,24 +713,6 @@ public:
         {
             accept(expr_operator_low_set, e_node);
             e_node->right = build_low();
-        }
-
-        return e_node;
-    }
-
-    Expresion_node* ARITHMETIC(Base_node* buffer)
-    {
-        cout<<"----- W ARITHMETIC"<<endl;
-
-        // A CO Z NEGACJA LUB MINUSEM????
-
-        Expresion_node* e_node;
-        if(token_in_set(arithmetic_set))
-        {
-            e_node = build_node(buffer);
-
-            while(token_in_set(arithmetic_set))
-                e_node = build_node(e_node);
         }
 
         return e_node;
@@ -874,7 +808,7 @@ public:
         accept(ID_SY, d_node);
         if(token.get_token() == ASSIGN_SY)
         {
-            accept(ASSIGN_SY, d_node);// set bool is definition true
+            accept(ASSIGN_SY, d_node);// set is definition = true
             if(token_in_set(embedded_set))
                 d_node-> value = EMBEDDED_DECL();
             else
@@ -885,26 +819,46 @@ public:
         return d_node;
     }
 
+    // NEGACJE I MINUSY dodac
     Base_node* EXPRESION()
     {
-        Base_node* e_node;
+        bool was_neg = false;
+        Expresion_leaf* wrapper = new Expresion_leaf();
 
-        Base_node* buffer = SIMPLY();
-
-        if(token_in_set(logic_set))
+        if(token.get_token() == NOT_SY)
         {
-            e_node = new Expresion_node();
-            e_node = LOGIC(buffer);
-            return e_node;
-        }
-        else if(token_in_set(arithmetic_set))
-        {
-            e_node = new Expresion_node();
-            e_node = ARITHMETIC(buffer);
-            return e_node;
+            wrapper-> negation_or_minus = true;
+            accept(NOT_SY);
+            was_neg = true;
         }
 
-        return buffer;
+        Base_node* expr;
+        if(token.get_token() == LPAREN_SY)
+        {
+            if(was_neg)
+                wrapper -> simply = build_paren();
+            else
+                expr = build_paren();
+        }
+        else
+        {
+            if(was_neg)
+                wrapper -> simply = SIMPLY();
+            else
+                expr = SIMPLY();
+        }
+
+        if(token_in_set(expr_operator_set))
+        {
+            Expresion_node* e_node = was_neg ? build_node(wrapper) : build_node(expr);
+
+            while(token_in_set(expr_operator_set))
+                e_node = build_node(e_node);
+
+            return e_node;
+        }
+
+        return was_neg ? wrapper : expr;
     }
 
     // EMBEDDED_DECL = EMBEDDED "(" VALUE ")"
@@ -915,6 +869,7 @@ public:
         cout<<"----- W EMBEDDED_DECL"<<endl;
         accept(embedded_set, e_node);
         accept(LPAREN_SY);
+
         // dozwolone tylko inicjalizowanie stringiem lub intem
         if(token.get_token() == STRING_CONTENT_SY)
             accept(STRING_CONTENT_SY, e_node);

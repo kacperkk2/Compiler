@@ -6,9 +6,9 @@
 
 enum Node_type
 {
-    PROGRAM_NODE, FUNCTION_NODE, CONDITION_NODE, PRINT_NODE, LOOP_NODE, OPERATION_NODE,
+    PROGRAM_NODE, FUNCTION_NODE, CONDITION_NODE, PRINT_NODE, LOOP_NODE,
     VALUE_NODE, DEFINITION_NODE, EMBEDDED_DECL_NODE, FUNCTION_CALL_NODE, RETURN_NODE,
-    ID_NODE, EMBEDDED_ATTR_NODE, EMBEDDED_FUN_NODE, ASSIGN_NODE, EXPRESION_NODE
+    ID_NODE, EMBEDDED_ATTR_NODE, EMBEDDED_FUN_NODE, ASSIGN_NODE, EXPRESION_NODE, EXPRESION_LEAF
 };
 
 struct Parameter
@@ -86,7 +86,7 @@ struct Embedded_attr_node : Base_node
 
 struct Return_node : Base_node
 {
-    Base_node* expresion; // tu sa kolejne parametry wywolania funkcji
+    Base_node* expresion;
 
     Return_node() {node_type = RETURN_NODE;}
 
@@ -181,6 +181,22 @@ struct Value_node : Base_node
     }
 };
 
+struct Expresion_leaf : Base_node
+{
+    bool negation_or_minus;
+    Base_node* simply;
+
+    Expresion_leaf() {node_type = EXPRESION_LEAF; negation_or_minus = false;}
+
+    void to_string(std::string tabs)
+    {
+        std::cout<<tabs+"Expresion_leaf {"<<std::endl;
+        std::cout<<tabs+" negation_or_minus: "<< negation_or_minus <<std::endl;
+        simply->to_string(tabs+"\t");
+        std::cout<<tabs+"}"<<std::endl;
+    }
+};
+
 struct Expresion_node : Base_node
 {
     std::string operation;
@@ -195,31 +211,6 @@ struct Expresion_node : Base_node
         left->to_string(tabs+"\t");
         std::cout<<tabs+" operation: "<< operation <<std::endl;
         right->to_string(tabs+"\t");
-        std::cout<<tabs+"}"<<std::endl;
-    }
-};
-
-struct Operation_node : Base_node
-{
-    bool not_simply; // czy negujemy wyrazenie lub czy minus dla arytmetycznego
-    std::vector<Base_node*> simply; // tu moze byc value, function call, id ...
-    std::string operation;
-    bool last; // czy to ostatni node, jak tak to nie bedzie mial operatora ani right
-    Operation_node* right;
-
-    Operation_node() {node_type = OPERATION_NODE; not_simply = false; last = true;}
-
-    void to_string(std::string tabs)
-    {
-        std::cout<<tabs+"Operation_node {"<<std::endl;
-        std::cout<<tabs+" negation or minus: "<< not_simply <<std::endl;
-        for (auto &sim : simply)
-            sim->to_string(tabs+"\t");
-        if(last == false)
-        {
-            std::cout<<tabs+" operation: "<< operation <<std::endl;
-            right->to_string(tabs+"\t");
-        }
         std::cout<<tabs+"}"<<std::endl;
     }
 };
