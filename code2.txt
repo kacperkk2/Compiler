@@ -1,0 +1,22 @@
+noret rec(User u) {
+
+	Algorithm a = Algorithm("Collaborative");
+
+	Path p = a.getRecomendation(u);
+
+	@ Algorithm nie ma funkcji rankRecomendation @
+	float rrank = a.rankRecomendation(p);
+	
+	if(rrank > 5.5)
+	{
+		print("High rank of recommendation\n");
+	}
+	else
+	{
+		print("Low rank\n");
+	}
+}
+
+noret main() {
+	rec(u);
+}

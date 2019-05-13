@@ -1,0 +1,33 @@
+noret rec(User u) {
+
+	Algorithm a = Algorithm("Collaborative");
+
+	Path p = a.getRecomendation(u);
+
+	float rrank = u.rankRecomendation(p);
+	
+	if(rrank > 5.5)
+	{
+		print("High rank of recommendation\n");
+	}
+	else
+	{
+		print("Low rank\n");
+	}
+}
+
+noret main() {
+
+	User u = User(1);
+	rec(u);
+
+	Algorithm a = Algorithm("fast");
+
+	a.lambda = 0.5;
+	while(a.lambda < 10.5) {
+		a.lambda = a.lambda + 0.5;
+		print("Parameter value: "); 
+		print(a.lambda);
+		print("\n");
+	}
+}

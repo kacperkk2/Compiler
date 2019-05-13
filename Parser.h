@@ -17,6 +17,8 @@ class Parser
                                     ALGORITHM_SY, PATH_SY};
     std::list<TOKEN_SY> stmt_first_set = {IF_SY, WHILE_SY, INT_SY, FLOAT_SY, STRING_SY, BOOL_SY, NORET_SY,
                                         USER_SY, ALGORITHM_SY, PATH_SY, RETURN_SY, ID_SY, PRINT_SY};
+    std::list<TOKEN_SY> expr_first_set = {NOT_SY, LPAREN_SY, MINUS_SY, ID_SY,STRING_CONTENT_SY,
+                                        NUMBER_FLOAT_SY, NUMBER_INT_SY, TRUE_SY, FALSE_SY};
     //std::list<TOKEN_SY> logic_set = {OR_SY, AND_SY, NOT_EQUAL_SY, EQUAL_SY, LESS_EQUAL_SY, LESS_SY,
     //                                GREATER_SY, GREATER_EQUAL_SY};
     //std::list<TOKEN_SY> arithmetic_set = {MULT_SY, DIV_SY, PLUS_SY, MINUS_SY};
@@ -31,7 +33,6 @@ class Parser
     std::list<TOKEN_SY> expr_operator_set = {OR_SY, AND_SY, MULT_SY, DIV_SY, PLUS_SY, MINUS_SY,
                     NOT_EQUAL_SY, EQUAL_SY, LESS_EQUAL_SY, LESS_SY, GREATER_SY, GREATER_EQUAL_SY};
 
-    // tutaj nwm co z != == w expresion, TRZEBA JE DODAC DO ACCEPT BO W NODE OPERATION JEST PUSTE DLA NICH
     std::list<TOKEN_SY> expr_operator_high_set = {AND_SY, MULT_SY, DIV_SY, NOT_EQUAL_SY, EQUAL_SY, LESS_EQUAL_SY, LESS_SY,
                                     GREATER_SY, GREATER_EQUAL_SY};
     std::list<TOKEN_SY> expr_operator_low_set = {OR_SY, PLUS_SY, MINUS_SY};
@@ -47,7 +48,6 @@ public:
     {
         if(token.get_token() == tok_sy)
         {
-            cout<<"Przyjeto token: " << token_name(token.get_token()) <<endl;
             if(is_second_token)
             {
                 token = second_token;
@@ -74,7 +74,6 @@ public:
         {
             interprete_and_fill_node(node);
 
-            cout<<"Przyjeto token: "<< token_name(token.get_token()) <<endl;
             if(is_second_token)
             {
                 token = second_token;
@@ -167,7 +166,7 @@ public:
                     switch(token.get_token())
                     {
                     case STRING_CONTENT_SY:
-                        p_node-> content = token.get_str_value();
+                        p_node-> content = "\""+token.get_str_value()+"\"";
                         break;
                     case NUMBER_INT_SY:
                         p_node-> content = to_string(token.get_int_value());
@@ -184,11 +183,19 @@ public:
                     default: break;
                     }
                 }
-                else // mamy id
+                // mamy id przed ewentualna .
+                else if(token.get_token() == ID_SY)
                 {
                     p_node-> content = token.get_str_value();
                     p_node-> is_id_in_content = true;
                 }
+                // mamy atrybut po kropce
+                else if(token_in_set(algo_attr_set))
+                    p_node-> after_dot = token.get_str_value();
+                // mamy kropke
+                else
+                    p_node-> is_dot = true;
+
             break;
             }
         case VALUE_NODE:
@@ -200,19 +207,24 @@ public:
                         v_node-> minus_value = true;
                         break;
                     case STRING_CONTENT_SY:
-                        v_node-> value = token.get_str_value();
+                        v_node-> value = "\""+token.get_str_value()+"\"";
+                        v_node->type_value = "string";
                         break;
                     case NUMBER_INT_SY:
                         v_node-> value = to_string(token.get_int_value());
+                        v_node->type_value = "int";
                         break;
                     case NUMBER_FLOAT_SY:
                         v_node-> value = to_string(token.get_float_value());
+                        v_node->type_value = "float";
                         break;
                     case TRUE_SY:
                         v_node-> value = "true";
+                        v_node->type_value = "bool";
                         break;
                     case FALSE_SY:
                         v_node-> value = "false";
+                        v_node->type_value = "bool";
                         break;
                     default: break;
                     }
@@ -264,7 +276,7 @@ public:
                     switch(token.get_token())
                     {
                     case STRING_CONTENT_SY:
-                        e_node-> value = token.get_str_value();
+                        e_node-> value = "\""+token.get_str_value()+"\"";
                         break;
                     case NUMBER_INT_SY:
                         e_node-> value = to_string(token.get_int_value());
@@ -371,6 +383,24 @@ public:
                 case MINUS_SY:
                     e_node->operation = "-";
                     break;
+                case NOT_EQUAL_SY:
+                    e_node->operation = "!=";
+                    break;
+                case EQUAL_SY:
+                    e_node->operation = "==";
+                    break;
+                case LESS_EQUAL_SY:
+                    e_node->operation = "<=";
+                    break;
+                case LESS_SY:
+                    e_node->operation = "<";
+                    break;
+                case GREATER_SY:
+                    e_node->operation = ">";
+                    break;
+                case GREATER_EQUAL_SY:
+                    e_node->operation = ">=";
+                    break;
                 default: break;
                 }
             break;
@@ -402,7 +432,6 @@ public:
     {
         Function_node* f_node = new Function_node();
 
-        cout<<"----- W FUNCTION"<<endl;
         accept(type_set, f_node); // akceptuj kazdy token z setu, else error
         accept(ID_SY, f_node);
         accept(LPAREN_SY);
@@ -433,7 +462,6 @@ public:
     Base_node* STATEMENT()
     {
         Base_node* statement;
-        cout<<"----- W STATEMENT"<<endl;
         if(token.get_token() == IF_SY)
             statement = CONDITION();
         else if(token.get_token() == PRINT_SY)
@@ -465,7 +493,6 @@ public:
     {
         Condition_node* c_node = new Condition_node();
 
-        cout<<"----- W CONDITION"<<endl;
         accept(IF_SY);
         accept(LPAREN_SY);
         c_node-> logic = EXPRESION();
@@ -495,9 +522,9 @@ public:
     {
         Base_node* simply;
 
-        cout<<"----- W SIMPLY"<<endl;
         if(token_in_set(value_set) || token.get_token() == MINUS_SY)
             simply = VALUE();
+
         else if(token.get_token() == ID_SY)
         {
             // potrzebny jeszcze nastepny token zeby sie dowiedziec czy id. czy func
@@ -505,8 +532,10 @@ public:
 
             if(second_token.get_token() == LPAREN_SY)
                 simply = FUNCTION_CALL(0);
+
             else if(second_token.get_token() == DOT_SY)
                 simply = ALGO_ATTR_EMB_FUN();
+
             else
                 simply = ID(); // jesli nic nie dopasowano to to bedzie samo id
         }
@@ -572,11 +601,10 @@ public:
         accept(LPAREN_SY);
 
         bool was_neg = false;
-        Expresion_leaf* wrapper = new Expresion_leaf();
+        Negation_node* wrapper = new Negation_node();
 
         if(token.get_token() == NOT_SY)
         {
-            wrapper->negation_or_minus = true;
             accept(NOT_SY);
             was_neg = true;
         }
@@ -613,11 +641,10 @@ public:
     Base_node* build_high()
     {
         bool was_neg = false;
-        Expresion_leaf* wrapper = new Expresion_leaf();
+        Negation_node* wrapper = new Negation_node();
 
         if(token.get_token() == NOT_SY)
         {
-            wrapper->negation_or_minus = true;
             accept(NOT_SY);
             was_neg = true;
         }
@@ -653,11 +680,10 @@ public:
     Base_node* build_low()
     {
         bool was_neg = false;
-        Expresion_leaf* wrapper = new Expresion_leaf();
+        Negation_node* wrapper = new Negation_node();
 
         if(token.get_token() == NOT_SY)
         {
-            wrapper->negation_or_minus = true;
             accept(NOT_SY);
             was_neg = true;
         }
@@ -723,7 +749,6 @@ public:
     {
         Loop_node* l_node = new Loop_node();
 
-        cout<<"----- W LOOP"<<endl;
         accept(WHILE_SY);
         accept(LPAREN_SY);
         l_node->logic = EXPRESION();
@@ -741,7 +766,6 @@ public:
     {
         Assign_node* a_node = new Assign_node();
 
-        cout<<"----- W ASSIGN"<<endl;
         accept(ID_SY, a_node);
 
         if(token.get_token() == DOT_SY)
@@ -767,7 +791,6 @@ public:
     {
         Return_node* r_node = new Return_node();
 
-        cout<<"----- W RETURN"<<endl;
         accept(RETURN_SY);
         r_node->expresion = EXPRESION();
         accept(SEMICOL_SY);
@@ -780,15 +803,17 @@ public:
     {
         Function_call_node* f_node = new Function_call_node();
 
-        cout<<"----- W FUNCTION_CALL"<<endl;
         accept(ID_SY, f_node);
         accept(LPAREN_SY);
 
-        f_node->expresions.push_back(EXPRESION());
-        while(token.get_token() == COMMA_SY)
+        if(token_in_set(expr_first_set))
         {
-            accept(COMMA_SY);
             f_node->expresions.push_back(EXPRESION());
+            while(token.get_token() == COMMA_SY)
+            {
+                accept(COMMA_SY);
+                f_node->expresions.push_back(EXPRESION());
+            }
         }
 
         accept(RPAREN_SY);
@@ -803,7 +828,6 @@ public:
     {
         Definition_node* d_node = new Definition_node();
 
-        cout<<"----- W DEFINITION"<<endl;
         accept(type_set, d_node);
         accept(ID_SY, d_node);
         if(token.get_token() == ASSIGN_SY)
@@ -819,15 +843,13 @@ public:
         return d_node;
     }
 
-    // NEGACJE I MINUSY dodac
     Base_node* EXPRESION()
     {
         bool was_neg = false;
-        Expresion_leaf* wrapper = new Expresion_leaf();
+        Negation_node* wrapper = new Negation_node();
 
         if(token.get_token() == NOT_SY)
         {
-            wrapper-> negation_or_minus = true;
             accept(NOT_SY);
             was_neg = true;
         }
@@ -866,15 +888,25 @@ public:
     {
         Embedded_decl_node* e_node = new Embedded_decl_node();
 
-        cout<<"----- W EMBEDDED_DECL"<<endl;
+        TOKEN_SY emb_type = token.get_token();
         accept(embedded_set, e_node);
         accept(LPAREN_SY);
 
         // dozwolone tylko inicjalizowanie stringiem lub intem
         if(token.get_token() == STRING_CONTENT_SY)
-            accept(STRING_CONTENT_SY, e_node);
+        {
+            if(emb_type == ALGORITHM_SY)
+                accept(STRING_CONTENT_SY, e_node);
+            else
+                print_error_message("Inicjalizowanie typu Algorithm mozliwe tylko stringiem");
+        }
         else
-            accept(NUMBER_INT_SY, e_node);
+        {
+            if(emb_type == USER_SY)
+                accept(NUMBER_INT_SY, e_node);
+            else
+                print_error_message("Inicjalizowanie typu User mozliwe tylko intem");
+        }
         accept(RPAREN_SY);
         // bez srednika bo gwarantuje to funkcja wywolujaca
 
@@ -886,14 +918,20 @@ public:
     {
         Print_node* p_node = new Print_node();
 
-        cout<<"----- W PRINT"<<endl;
         accept(PRINT_SY);
         accept(LPAREN_SY);
 
         if(token_in_set(value_set))
             accept(value_set, p_node);
         else
+        {
             accept(ID_SY, p_node);
+            if(token.get_token() == DOT_SY)
+            {
+                accept(DOT_SY, p_node);
+                accept(algo_attr_set, p_node);
+            }
+        }
 
         accept(RPAREN_SY);
         accept(SEMICOL_SY);

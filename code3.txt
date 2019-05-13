@@ -1,0 +1,15 @@
+noret rec() {
+	@ niezdefiniowana zmienna @
+	if(rrank > 5.5)
+	{
+		print("High rank of recommendation\n");
+	}
+	else
+	{
+		print("Low rank\n");
+	}
+}
+
+noret main() {
+	rec();
+}

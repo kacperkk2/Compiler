@@ -8,57 +8,29 @@
 #include "Source.h"
 #include "Lexer.h"
 #include "Parser.h"
+#include "Interpreter.h"
 
 using namespace std;
 
 void interprete_token(Token&);
-void print_tree(Base_node*);
 
 int main()
 {
-    string filename = "plik.txt";
+    string filename = "code0.txt";
+    string output_file = "output/out.cpp";
 
     Source src(filename);
     Lexer l(src);
     Parser parser(l);
 
-    Program_node* root = parser.PROGRAM();
-
-    cout<<endl<<"DRZEWKO: ----------"<<endl;
-
-    root->to_string("");
-    //print_tree(root);
-
-    /*cout<<root->functions.size()<<endl;
-    cout<<root->functions[0]->ret_type<<endl;
-    cout<<root->functions[0]->id<<endl;
-
-    cout<<root->functions[0]->parameters.size()<<endl;
-    cout<<root->functions[0]->parameters[0].param_type<<endl;
-    cout<<root->functions[0]->parameters[0].param_id<<endl;
-
-    cout<<root->functions[0]->statements.size()<<endl;
-
-    Print_node* p_node = (Print_node*)root->functions[0]->statements[0];
-    cout<<p_node->content<<endl;
-    cout<<p_node->is_id_in_content<<endl;*/
+    Interpreter i(output_file, parser);
+    i.evaluate_tree();
 
     return 0;
 }
 
 void interprete_token(Token& A)
 {
-    /*Token A;
-
-    while(A.get_token() != END_SOURCE_SY)
-    {
-        A = l.get_token();
-        interprete_token(A);
-
-        int x;
-        cin>>x;
-    }*/
-
     switch(A.get_token())
     {
     case NUMBER_INT_SY:
