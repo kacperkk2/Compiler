@@ -232,6 +232,7 @@ zdefiniowane obiekty wbudowane. Do projektu dołączony jest najprostrzy
 makefile, który kompiluje plik wyjściowy z flagami: -g -Wall -std=c++11.
 
 ### Przykładowy kod pliku wejściowego
+```
 int ffunction(int value, int fvalue) {
   return 3;
 }
@@ -262,7 +263,7 @@ print("Algorithm typed path correctly");
 }
 else { print("stringg string1"); }
 }
-
+```
 ### Kod pliku wyjściowego w C++
 #include <iostream>
 #include "Embedded_types.h"
