@@ -1,9 +1,6 @@
-# Compiler
+# Język skryptowy na potrzeby systemu rekomendacji
+## Autor: Kacper Klimczuk
 
-
-Temat: „język skryptowy na potrzeby systemu
-rekomendacji”
-Autor: Kacper Klimczuk
 Język posłuży do przeprowadzenia testów algorytmów
 zaimplementowanych podczas pracowni inżynierskiej. Pozwoli on tworzyć
 obiekty wbudowane: User - użytkownik, Path – rekomendowana ścieżka,
@@ -17,7 +14,7 @@ rekomendowany obiekt, zwracany przez algorytm.
 
 
 
-Obiekty wbudowane
+### Obiekty wbudowane
 User:
 Pola
 int id
@@ -55,18 +52,13 @@ przewidzana jest żadna
 akcja bezpośrednio na tym
 obiekcie
 
-Opis składni w EBNF
+### Opis składni w EBNF
 PROGRAM = {FUNCTION}
-
 FUNCTION = RET_TYPE ID "(" {TYPE ID} ")" "{" {STATEMENT} "}"
-
 STATEMENT = CONDITION | PRINT | LOOP | ASSIGN | DEFINITION | RETURN
 | FUNCTION_CALL
-
 RETURN = "return" EXPRESION ";"
-
 CONDITION = IF [ELSE]
-
 IF = "if" "(" LOGIC ")" "{" {STATEMENT} "}"
 ELSEIF = "elseif" "(" LOGIC ")" "{" {STATEMENT} "}"
 ELSE = "else" "{" {STATEMENT} "}"
@@ -92,7 +84,9 @@ RET_TYPE = TYPE | “noret”TYPE = PRIMITIVE | EMBEDDED
 EMBEDDED = "User" | "Path" | "Algorithm"
 PRIMITIVE = "int" | "float" | "string" | “bool”
 PRINT = “print” “(“ ( ID | VALUE) “)” “;”
-Główne moduły
+
+
+### Główne moduły
 Źródło - przechowuje plik wejściowy, bieżący znak, bieżącą linię w pliku
 oraz pozycję w linii.
 Lekser - przechowuje obiekt źródła i korzystając z jego interfejsu pobiera
@@ -103,8 +97,10 @@ sposób określania produkcji.
 Generator kodu - korzysta z drzewa wygenerowanego przez Parser.
 Przechowuje obiekt parsera, plik wyjściowy, wskaźnik na korzeń drzewa
 Parsera oraz tablice symboli.
-Implementacja modułów
-Źródło:
+
+
+### Implementacja modułów
+##### Źródło:
 Gdy lexer wyda polecenie używając funkcji "load_next_ch()" źródło
 przesuwa iterator na następny znak w linii, jeśli następny znak to \n, wtedy
 źródło ładuje kolejną linię z pliku za pomocą "getline" ustawiając iterator
@@ -112,7 +108,7 @@ na pierwszym znaku.
 Lexer może podejrzeć bieżący znak za pomocą "see_current_ch" i dopiero
 jeśli konsumuje dany znak wywołuje funkcję źródła pobierającą kolejny
 znak z pliku.
-Lexer:
+##### Lexer:
 Główną funkcją jest "get_token()", która pozwala parserowi pobrać kolejny
 token od lexera. Ta funkcja składa kolejne znaki otrzymywane od źródła
 pomijając znaki białe a także komentarze. Gdy dane słowo zostaje złożone,
@@ -120,7 +116,8 @@ lexer sprawdza czy jest to keyword za pomocą "check_if_keyword" (gdy
 składa operator - nie używa tej funkcji).
 Gdy lexer napotka na znak/wyrażenie nie będące częścią języka używa
 funkcji "error", która wypisuje bieżącą linię pliku na ekran oraz zaznacza
-miejsce wystąpienia błędu.Parser:
+miejsce wystąpienia błędu.
+##### Parser:
 Funkcją początkującą budowę drzewa jest "PROGRAM()", następne funkcje
 są wywoływane zależnie od tego jaką sekwencję tokenów zwróci Lexer.
 Parser korzysta ze zbioru funkcji napisanych według opisu składni w EBNF,
@@ -136,7 +133,7 @@ buforowany token nie jest tym oczekiwanym, funkcja korzysta z
 "accept" kończy wykonanie programu.
 Jest to parser RD - Recursive Descent, który generuje wyprowadzenie
 prawostronne.
-Generator kodu:
+##### Generator kodu:
 Otrzymuje od Parsera wskazanie na pierwszy węzeł (root), zawsze jest to
 węzeł Program_node. Ten węzeł przechowuje wskazania na poszczególne
 funkcje, a te zaś wskazania na poszczególne wyrażenia językowe w swoim
@@ -155,7 +152,8 @@ typ parametru.
 Język umożliwia stosowanie skomplikowanych wyrażeń z użyciem
 nawiasów i negacji dla wyrażeń logicznych, a w skład wyrażeń mogą
 wchodzić bezpośrednio wartości jak i wywołania funkcji i zmienne.
-Testowanie
+
+### Testowanie
 W ramach testów przygotowałem łącznie 20 testów z opisami i
 spodziewanymi wynikami wraz z plikami wynikowymi (testy parsera nie
 mają plików wynikowych, ponieważ drzewo wypisywane jest na konsolę po
@@ -186,7 +184,8 @@ zmienna
 7) Przypisanie stringa do zmiennej typu float
 8) Funkcja o zadeklarowanym zwracanym typie string, zwrócenie typu int
 9) Wywołanie funkcji z mniejszą liczbą parametrów
-Obiekty wejściowe
+
+### Obiekty wejściowe
 Program przyjmuje na wejściu plik tekstowy (.txt) podając nazwe po
 uruchomieniu programu. Plik musi zawierać jedynie kod w tworzonym
 języku (bez bibliotek) - funkcja main poprzedzona zbiorem funkcji.
@@ -195,12 +194,14 @@ konsoli wraz z komunikatem, numerem linii i numerem znaku w linii. Błędy
 napotkane na poziomie generatora kodu zostaną dopisane w pliku
 wejściowym - w miejscu wystąpienia błędu zostanie dopisany stosowny
 komunikat.
-Obiekty wyjściowe
+### Obiekty wyjściowe
 Program generuje na wyjściu plik źródłowy (.cpp) w języku C++ z
 dołączonymi potrzebnymi bibliotekami: iostream - wypisywanie
 komunikatów na standardowe wyjście, Embedded_types - zawiera
 zdefiniowane obiekty wbudowane. Do projektu dołączony jest najprostrzy
-makefile, który kompiluje plik wyjściowy z flagami: -g -Wall -std=c++11.Przykładowy kod pliku wejściowego
+makefile, który kompiluje plik wyjściowy z flagami: -g -Wall -std=c++11.
+
+### Przykładowy kod pliku wejściowego
 int ffunction(int value, int fvalue) {
 return 3;
 }
@@ -229,7 +230,9 @@ if(arank > a.regParameter) {
 print("Algorithm typed path correctly");
 }
 else { print("stringg string1"); }
-}Kod pliku wyjściowego w C++
+}
+
+### Kod pliku wyjściowego w C++
 #include <iostream>
 #include "Embedded_types.h"
 int ffunction(int value, int fvalue)
