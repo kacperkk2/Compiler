@@ -293,7 +293,7 @@ int main()
   float param = 0.500000;
   while(param < 10.500000)
   {
-	  param = param + 0.500000;
+    param = param + 0.500000;
     std::cout << "Parameter value: ";
     std::cout << param;
     std::cout << "\n";
