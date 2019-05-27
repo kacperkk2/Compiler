@@ -1,7 +1,6 @@
 # Compiler
 
 
-TKOM – Dokumentacja końcowa
 Temat: „język skryptowy na potrzeby systemu
 rekomendacji”
 Autor: Kacper Klimczuk
@@ -15,6 +14,9 @@ określającą w jakim stopniu ścieżka odpowiada danemu użytkownikowi.
 Algorithm będzie tworzony przez podanie nazwy algorytmu (string), będzie
 przechowywał parametry algorytmu oraz metody z nimi powiązane. Path –
 rekomendowany obiekt, zwracany przez algorytm.
+
+
+
 Obiekty wbudowane
 User:
 Pola
