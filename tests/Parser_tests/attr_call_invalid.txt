@@ -1,0 +1,6 @@
+noret ffunction() {
+	
+	Algorithm a = Algorithm("fast");
+	a.lambda.lambda = 2;
+}
+

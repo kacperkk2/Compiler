@@ -1,0 +1,19 @@
+Testy Lexer:
+
+1. id.txt / id_out.txt
+
+OPIS: Plik zawierajacy na poczatku 2 poprawne id, nastepnie 3 linijki nie bedace poprawnymi identyfikatorami w calosci.
+
+SPODZIEWANY WYNIK: 2 tokeny identyfikatora, numer z poczatku id zaloczony do tokenu number, dalsza czesc zakwalifikowana jako poprawne id, znak _ traktowany jako token ERROR_SY, dalsza czesc zakwalifikowana do number token, nastepnie _ ponownie jako ERROR_SY, a dalsza czesc jako poprawny identyfikator.
+
+2. keywords.txt / keywords_out.txt
+
+OPIS: Plik skladajacy sie z keywordow oddzielonych od siebie nowa linia, na koncu pliku zbior wyrazen nie bedacych keywordami, a spelniajace kryteria identyfikatora.
+
+SPODZIEWANY WYNIK: zbior tokenow o nazwie keyworda, bez tokenow ERROR_SY, na koncu pliku 4 tokeny ID_SY.
+
+3. operators.txt / operators_out.txt
+
+OPIS: Plik skladajacy sie z operatorow oddzielonych od siebie nowa linia, na koncu pliku zbior operatorow nie bedacych czescia jezyka.
+
+SPODZIEWANY WYNIK: zbior tokenow o nazwie odpowiadajacej danemu operatorowi, bez tokenow ERROR_SY, na koncu pliku 6 tokenow ERROR_SY odpowiadajace 6 operatorom nie bedacych w jezyku.

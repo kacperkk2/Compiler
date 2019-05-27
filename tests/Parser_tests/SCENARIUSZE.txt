@@ -1,0 +1,55 @@
+Testy Parser:
+
+1. empty.txt
+
+OPIS: Pusty plik na wejsciu parsera.
+
+SPODZIEWANY WYNIK: Wypisanie na konsole komunikatu "Plik jest pusty", oraz zakonczenie programu, bez tworzenia drzewa rozbioru.
+
+2. no_functions.txt
+
+OPIS: Plik skladajacy sie z jednej instrukcji print.
+
+SPODZIEWANY WYNIK: Wypisanie na konsole komunikatu "Plik moze skladac sie TYLKO z funkcji" wraz ze wskazanym miejscem bledu, oraz zakonczenie progarmu, bez tworzenia drzewa rozbioru.
+
+3. one_function.txt
+
+OPIS: Plik skladajacy sie z definicji funkcji bez zwracanego typu, z 2 argumentami, 1 instrukcja warunkowa - w srodku 1 instrukcja print, 1 instrukcja zdefiniowania zmiennej oraz 1 instrukcja przypisania do tej zmiennej wartosci.
+
+SPODZIEWANY WYNIK: Drzewo rozbioru skladajace sie z nodeow: Program_node przetrzymujacy wskazanie na Function_node, ten przetrzymuje wskazania na Condition_node, Definition_node, Assign_node. Wewnatrz Condition_node wskazanie na Expresion_node (w nim wskazania na Id_node i Value_node bedace warunkiem konstrukcji warunkowej) oraz Print_node. Wewnatrz Assign_node wskazanie na wartosc przypisana id - Value_node.
+
+4. valid_code.txt
+
+OPIS: Plik skladajacy sie z w pelni poprawnego kodu, plik zawiera: definicje 2 funkcji, wykorzystanie instrukcji warunkowej oraz petli, wykorzystanie typow wbudowanych oraz wszystkich typow podstawowych, odwolania do funkcji zdefiniowanych nad funkcja main.
+
+SPODZIEWANY WYNIK: Poprawne drzewo rozbioru bez wypisanych błędów, zawierajace m.in. wezly: Condition_node, Definition_node, Assign_node, Loop_node, Print_node.
+
+5. few_paren_expr.txt
+
+OPIS: Plik skladajacy sie z funkcji zawierajacej wyrazenie arytmetyczne z wieloma nawiasami zagniezdzonymi.
+
+SPODZIEWANY WYNIK: Poprawne drzewo, bez wypisywania bledu.
+
+6. logic_expr_neg.txt
+
+OPIS: Plik skladajacy sie z funkcji zawierajacej wyrazenie logiczne skladajace sie z 2 mniejszych wyrazen wewnatrz nawiasow polaczonych operatoem &&, z negacja przzed pierwszym nawiasem.
+
+SPODZIEWANY WYNIK: Drzewo skladajace sie z wezlow Expresion_node, w tym ze tylko pierwsze wyrazenie wewnatrz nawiasow przed ktorym byla negacja jest dodatkowo opakowany w wezel Negation_node.
+
+7. no_statement.txt
+
+OPIS: Plik skladajacy sie z funkcji zawierajacej definicje zmiennej i probe przypisania do niej operatora &&.
+
+SPODZIEWANY WYNIK: Komunikat "Brak wyrazenia wpisujacego sie w semantyke SIMPLY", do zmiennej mozna przypisac tylko VALUE, ID, FUNCTION_CALL, ALGO_ATTR_EMB_FUN
+
+8. attr_call_invalid.txt
+
+OPIS: Plik skladajacy sie z funkcji zawierajacej zmienna typu wbudowanego i odwolanie sie do obiektu przez operator ".", nastepnie proba ponownego odwolania sie za pomoca tego samego operatora.
+
+SPODZIEWANY WYNIK: Komunikat o bledzie, wskazanie pozycji drugiego operatora "." oraz wypisanie spodziewanych operatorow - ASSIGN_SY.
+
+
+
+
+
+

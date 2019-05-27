@@ -1,0 +1,13 @@
+noret rec(User u) {
+
+	Algorithm a = Algorithm("Collaborative");
+
+	@ typ zwracany przez getRecomendation to nie User (Path p =) @
+	User p = a.getRecomendation(u);
+}
+
+noret main() {
+
+	User u = User(1);
+	rec(u);
+}

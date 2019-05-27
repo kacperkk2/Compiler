@@ -16,6 +16,13 @@ noret main() {
 	a.pearsonGroupSize = ffunction(value, fvalue) + function2(fvalue) + 4.8;	
 
 	float param = 0.5;
+	
+	bool cond = false;
+	if(param < 10.5)
+	{
+		cond = true;
+	}
+
 	while(param < 10.5) {
 		param = param + 0.5;
 		print("Parameter value: "); 
@@ -27,7 +34,8 @@ noret main() {
 	
 	float arank = u.rankRecomendation(p);
 	
-	if(arank > a.regParameter) { 
+	if(arank > a.regParameter) {
+		int value = 3; 
 		print("Algorithm typed path correctly");
 	}
 	else { print("stringg string1"); }

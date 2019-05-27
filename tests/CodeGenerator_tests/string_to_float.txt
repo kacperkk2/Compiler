@@ -1,0 +1,7 @@
+
+noret main() {
+
+	@ proba przypisania "sss" do float (usunac "sss") @
+	float rrank = 1.5 + "sss";
+
+}

@@ -1,0 +1,11 @@
+
+noret somefun(int first, int second)
+{
+	if(first == 1)
+	{
+		print("HELLO WORLD");
+	}
+
+	int a;
+	a = 100;
+}

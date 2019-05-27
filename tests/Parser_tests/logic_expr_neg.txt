@@ -1,0 +1,5 @@
+noret ffunction() {
+	
+	bool a = ~(b || c) && (d || e);
+}
+

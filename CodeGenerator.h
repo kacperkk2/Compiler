@@ -1,27 +1,28 @@
-#ifndef INTERPRETER_H
-#define INTERPRETER_H
+#ifndef CODEGENERATOR_H
+#define CODEGENERATOR_H
 
 #include <fstream>
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
 #include <map>
+#include <vector>
 
 #include "Parser.h"
 
 struct Function_descr
 {
     std::string ret_type;
-    unsigned num_of_params;
+    std::vector<Parameter> parameters;
 
-    Function_descr(std::string r, unsigned n) : ret_type(r), num_of_params(n)
+    Function_descr(std::string r, std::vector<Parameter> p) : ret_type(r), parameters(p)
     {}
 
     Function_descr()
     {}
 };
 
-class Interpreter
+class CodeGenerator
 {
     std::string filename;
     std::ofstream file;
@@ -31,14 +32,14 @@ class Interpreter
     int action_type; // 0 - nie ma akcji, 1 - przypisanie do zmiennej, 2 - porownanie returna z funkcji
     std::string id_of_action; // nazwa zmiennej do ktorej jest przypisywane cos
     std::string current_fun; // id biezacej funkcji, zmieniane co przejscie z funkcji, po to by moc porownac return z typem zadeklarowanym
-    std::map<std::string, std::string> symbols_array; // tablica symboli: zmienne w funkcji aktualnej jakiego sa typu
+    std::vector<std::map<std::string, std::string>> symbols_array; // tablica symboli: zmienne w funkcji aktualnej jakiego sa typu
     std::map<std::string, std::string> emb_symbols_array; // tablica symboli: pola wbudowane jakiego sa typu
     std::map<std::string, Function_descr> functions_array; // tablica funkcji w programie
     std::map<std::string, std::string> emb_field_member; // ktore pole nalezy do ktorego typu wbudowanego
     std::map<std::string, std::string> emb_fun_ret; // co zwracaja funkcje wbudowane
 
 public:
-    Interpreter(std::string filename, Parser &p) : parser(p)
+    CodeGenerator(std::string filename, Parser &p) : parser(p)
     {
         action_type = 0;
         file.open(filename.c_str());
@@ -54,21 +55,21 @@ public:
         prepare_arrays();
     }
 
-    ~Interpreter()
+    ~CodeGenerator()
     {
         file.close();
     }
 
     void prepare_arrays_for_fun(Function_node* fun)
     {
-        functions_array[fun->id] = Function_descr(fun->ret_type, fun->parameters.size());
+        functions_array[fun->id] = Function_descr(fun->ret_type, fun->parameters);
         current_fun = fun->id;
 
         // kazda funkcja ma swoja wlasna tablice symboli
         symbols_array.clear();
 
         // kazdy musi miec dostep do wbudowanych pol
-        symbols_array = emb_symbols_array;
+        symbols_array.push_back(emb_symbols_array);
     }
 
     void error_message(std::string message)
@@ -173,23 +174,21 @@ public:
                 file << fun-> ret_type << " ";
         }
 
-
         // naglowek funkcji
         file << fun-> id << "(";
         for(auto param = fun->parameters.begin(); param != fun->parameters.end(); param++)
         {
             file << param->param_type << " " << param->param_id;
-            if(symbols_array.count(param->param_id) != 0)
+            if(symbols_array.back().count(param->param_id) != 0)
                 error_message("<-- W definicji funkcji nazwa argumentu jest zajeta");
 
             // argumenty tez wchodza do puli zarezerwowanych id
-            symbols_array[param->param_id] = param->param_type;
+            symbols_array.back()[param->param_id] = param->param_type;
 
             if(param != fun-> parameters.end()-1)
                 file << ", ";
         }
         file << ")\n";
-
         file << "{\n";
 
         for(auto stmt : fun->statements)
@@ -207,23 +206,41 @@ public:
         evaluate_expr((Expresion_node*)cond->logic);
         file << ")\n";
 
+        // przed wejsciem do scope dodaje lokalna tablice symboli
+        std::map<std::string, std::string> new_scope;
+        symbols_array.push_back(new_scope);
+
         file << tabs+"{\n";
         for(auto ifs : cond->if_statements)
             interpret_and_evaluate(ifs, tabs+"\t");
         file << tabs+"}\n";
 
+        // wychodzimy z klamerek to usuwamy lokalna tablice symboli
+        symbols_array.pop_back();
+
         if(cond->else_statements.size() > 0)
         {
+            // przed wejsciem do scope dodaje lokalna tablice symboli
+            std::map<std::string, std::string> new_scope;
+            symbols_array.push_back(new_scope);
+
             file << tabs+"else\n";
             file << tabs+"{\n";
             for(auto els : cond->else_statements)
                 interpret_and_evaluate(els, tabs+"\t");
             file << tabs+"}\n";
+
+            // wychodzimy z klamerek to usuwamy lokalna tablice symboli
+            symbols_array.pop_back();
         }
     }
 
     void evaluate_loop(Loop_node* loop, std::string tabs)
     {
+        // przed wejsciem do scope dodaje lokalna tablice symboli
+        std::map<std::string, std::string> new_scope;
+        symbols_array.push_back(new_scope);
+
         file << tabs+"while(";
         evaluate_expr((Expresion_node*)loop->logic);
         file << ")\n";
@@ -232,6 +249,9 @@ public:
         for(auto stmt : loop->statements)
             interpret_and_evaluate(stmt, tabs+"\t");
         file << tabs+"}\n";
+
+        // wychodzimy z klamerek to usuwamy lokalna tablice symboli
+        symbols_array.pop_back();
     }
 
     void evaluate_negation_node(Negation_node* expr)
@@ -247,6 +267,19 @@ public:
             interpret_and_evaluate(expr->simply, "");
     }
 
+    int find_index_of_id(std::string id)
+    {
+        int index;
+
+        for(index = symbols_array.size()-1; index >= 0; index--)
+        {
+            if(symbols_array[index].count(id) > 0)
+                return index;
+        }
+
+        return -1;
+    }
+
     void evaluate_fun_call(Function_call_node* fun_call, std::string tabs)
     {
         file << tabs+fun_call-> id << "(";
@@ -254,14 +287,15 @@ public:
         if(functions_array.count(fun_call->id) == 0)
             error_message("<-- Funkcja o takiej nazwie nie byla zdefiniowana");
 
-        if(fun_call->expresions.size() != functions_array[fun_call->id].num_of_params)
+        if(fun_call->expresions.size() != functions_array[fun_call->id].parameters.size())
             error_message("<-- Istnieje funkcja o takiej nazwie ale innej liczbie parametrow wywolania");
 
         if(action_type > 0)
         {
             if(action_type == 1)
             {
-                if(!compatible_types(symbols_array[id_of_action], functions_array[fun_call->id].ret_type))
+                int index = find_index_of_id(id_of_action);
+                if(!compatible_types(symbols_array[index][id_of_action], functions_array[fun_call->id].ret_type))
                     error_message("<-- Zmienna przed = nie jest typu zwracanego przez funkcje");
             }
             else
@@ -277,6 +311,8 @@ public:
 
         for(auto param = fun_call->expresions.begin(); param != fun_call->expresions.end(); param++)
         {
+
+
             interpret_and_evaluate(*param, "");
 
             if(param != fun_call->expresions.end()-1)
@@ -291,21 +327,23 @@ public:
     {
         file << tabs+emb_fun->id;
 
+        int index = find_index_of_id(emb_fun->id);
         // sprawdzam czy zmienna przed kropka byla zdefiniowana
-        if(symbols_array.count(emb_fun->id) == 0)
+        if(index == -1)
             error_message("<-- Zmienna nie byla zdefiniowana");
 
         file << "." << emb_fun->fun_name << "(";
 
         // sprawdzam czy zmienna przed kropka jest obiektem tego typu wbudowanego co funkcja
-        if(symbols_array[emb_fun->id] != emb_field_member[emb_fun->fun_name])
+        if(symbols_array[index][emb_fun->id] != emb_field_member[emb_fun->fun_name])
             error_message("<-- Zmienna nie ma takiego pola");
 
         if(action_type > 0)
         {
             if(action_type == 1)
             {
-                if(!compatible_types(symbols_array[id_of_action], emb_fun_ret[emb_fun->fun_name]))
+                int index_act = find_index_of_id(id_of_action);
+                if(!compatible_types(symbols_array[index_act][id_of_action], emb_fun_ret[emb_fun->fun_name]))
                     error_message("<-- Zmienna przed = nie jest typu zwracanego przez funkcje");
             }
             else
@@ -317,19 +355,20 @@ public:
 
         file << emb_fun->value << ")";
 
+        int index_val = find_index_of_id(emb_fun->value);
         // sprawdzam czy zmienna bedaca argumentem byla zdefiniowana
-        if(symbols_array.count(emb_fun->value) == 0)
+        if(index_val == -1)
             error_message("<-- Zmienna nie byla zdefiniowana");
 
         // sprawdzam czy typ argumentu w funkcji zgadza sie z tym z typu wbudowanego
         if(emb_fun->fun_name == "rankRecomendation") // rankRecomendation(Path)
         {
-            if(symbols_array[emb_fun->value] != "Path")
+            if(symbols_array[index_val][emb_fun->value] != "Path")
                 error_message("<-- Typ argumentu nie zgadza sie z typem argumentu funkcji typu wbudowanego");
         }
         else // getRecomendation(User)
         {
-            if(symbols_array[emb_fun->value] != "User")
+            if(symbols_array[index_val][emb_fun->value] != "User")
                 error_message("<-- Typ argumentu nie zgadza sie z typem argumentu funkcji typu wbudowanego");
         }
     }
@@ -342,7 +381,8 @@ public:
         {
             if(action_type == 1)
             {
-                if(!compatible_types(symbols_array[id_of_action], decl->embedded_type))
+                int index_act = find_index_of_id(id_of_action);
+                if(!compatible_types(symbols_array[index_act][id_of_action], decl->embedded_type))
                     error_message("<-- Niezgodnosc typow");
             }
             else
@@ -357,26 +397,29 @@ public:
     {
         file << tabs+emb_attr->id << ".";
 
+        int index = find_index_of_id(emb_attr->id);
         // sprawdzam czy zmienna przed kropka byla zdefiniowana
-        if(symbols_array.count(emb_attr->id) == 0)
+        if(index == -1)
             error_message("<-- Zmienna nie byla zdefiniowana");
 
         // sprawdzam czy zmienna przed kropka jest tego typu co typ wbudowany majacy ten atrybut
-        if(symbols_array[emb_attr->id] != emb_field_member[emb_attr->attribute])
+        if(symbols_array[index][emb_attr->id] != emb_field_member[emb_attr->attribute])
             error_message("<-- Zmienna nie jest tego typu co zwracany typ lub zmienna nie ma takiego pola");
 
         file << emb_attr->attribute;
 
         if(action_type > 0)
         {
+            int index_attr = find_index_of_id(emb_attr->attribute);
             if(action_type == 1)
             {
-                if(!compatible_types(symbols_array[id_of_action], symbols_array[emb_attr->attribute]))
+                int index_act = find_index_of_id(id_of_action);
+                if(!compatible_types(symbols_array[index_act][id_of_action], symbols_array[index_attr][emb_attr->attribute]))
                     error_message("<-- Niezgodnosc typow");
             }
             else
             {
-                if(!compatible_types(functions_array[id_of_action].ret_type, symbols_array[emb_attr->attribute]))
+                if(!compatible_types(functions_array[id_of_action].ret_type, symbols_array[index_attr][emb_attr->attribute]))
                     error_message("<-- Niezgodnosc zwracanego typu przez funkcje");
             }
         }
@@ -399,7 +442,7 @@ public:
             }
             else
             {
-                if(symbols_array.count(print->content) == 0)
+                if(find_index_of_id(print->content) == -1)
                     error_message("<-- Zmienna o tej nazwie nie jest zdefiniowana");
             }
         }
@@ -417,7 +460,7 @@ public:
         file << ";\n";
     }
 
-    void evaluate_expr(Expresion_node* expr)
+    void evaluate_expr(Expresion_node* expr) // weryfikacja czy operator ma po prawej i po lewej typy ktore akceptuje
     {
         if(expr->left->node_type == EXPRESION_NODE)
         {
@@ -444,19 +487,22 @@ public:
     {
         file << tabs+idn->id;
 
-        if(symbols_array.count(idn->id) == 0)
+        int index_id = find_index_of_id(idn->id);
+
+        if(index_id == -1)
             error_message("<-- Zmienna o tej nazwie nie jest zdefiniowana");
 
         if(action_type > 0)
         {
             if(action_type == 1)
             {
-                if(!compatible_types(symbols_array[id_of_action], symbols_array[idn->id]))
+                int index_act = find_index_of_id(id_of_action);
+                if(!compatible_types(symbols_array[index_act][id_of_action], symbols_array[index_id][idn->id]))
                     error_message("<-- Niezgodnosc typow");
             }
             else
             {
-                if(!compatible_types(functions_array[id_of_action].ret_type, symbols_array[idn->id]))
+                if(!compatible_types(functions_array[id_of_action].ret_type, symbols_array[index_id][idn->id]))
                     error_message("<-- Niezgodnosc zwracanego typu przez funkcje");
             }
         }
@@ -476,7 +522,8 @@ public:
         {
             if(action_type == 1)
             {
-                if(!compatible_types(symbols_array[id_of_action], val->type_value))
+                int index_act = find_index_of_id(id_of_action);
+                if(!compatible_types(symbols_array[index_act][id_of_action], val->type_value))
                     error_message("<-- Niezgodnosc typow");
             }
             else
@@ -494,7 +541,8 @@ public:
             file << tabs+assi->id << "." << assi->algo_attr << " = ";
             id_of_action = assi->algo_attr;
 
-            if(symbols_array[assi->id] != emb_field_member[assi->algo_attr])
+            int index_id = find_index_of_id(assi->id);
+            if(symbols_array[index_id][assi->id] != emb_field_member[assi->algo_attr])
                 error_message("<-- Zmienna nie ma takiego pola");
         }
         else
@@ -503,7 +551,7 @@ public:
             id_of_action = assi->id;
         }
 
-        if(symbols_array.count(assi->id) == 0)
+        if(find_index_of_id(assi->id) == -1)
             error_message("<-- Zmienna nie byla zdefiniowana");
 
         action_type = 1;
@@ -516,10 +564,10 @@ public:
     {
         file << tabs+def->type << " " << def->id;
 
-        if(symbols_array.count(def->id) != 0)
+        if(symbols_array.back().count(def->id) != 0)
             error_message("<-- Redefinicja zmiennej - nazwa jest zajeta");
 
-        symbols_array[def->id] = def->type;
+        symbols_array.back()[def->id] = def->type;
 
         if(def->is_value)
         {

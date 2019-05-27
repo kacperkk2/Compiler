@@ -1,0 +1,60 @@
+Testy CodeGenerator:
+
+1. valid_code1.txt / valid_code1_out.cpp
+
+OPIS: Plik zawierajcy kompletny, poprawny kod wykorzystujacy instukcje warunkowe, petle, typy wbudowane, typy podstawowe, definijce i wywolania funkcji.
+
+SPODZIEWANY WYNIK: Wpisanie do pliku wynikowego kodu w c++, mozliwego do skompliowania, nie powodujacy zadnych bledow podczas wykonania.
+
+2. valid_code2.txt / valid_code2_out.cpp
+
+OPIS: Plik zawierajcy kompletny, poprawny kod wykorzystujacy instukcje warunkowe, petle, typy wbudowane, typy podstawowe, definijce i wywolania funkcji.
+
+SPODZIEWANY WYNIK: Wpisanie do pliku wynikowego kodu w c++, mozliwego do skompliowania, nie powodujacy zadnych bledow podczas wykonania.
+
+3. redef_scope.txt / redef_scope_out.cpp
+
+OPIS: W funkcji main definicja zmiennej, program zawiera zagniezdzony if, z definicja tej samej zmiennej w odrebnych blokach.
+
+SPODZIEWANY WYNIK: Wygenerowany kod bez bledow, definicje w osobnyh blokach nie sa sprzeczne z zalozeniami.
+
+4. no_embedded_attr.txt / no_embedded_attr_out.cpp
+
+OPIS: W funkcji wywolanej z poziomu main, zdefiniowana zmienna typu Algorithm i odwolanie sie do pola rankRecomendation.
+
+SPODZIEWANY WYNIK: Komunikat o bledzie zapisany do pliku "<-- Zmienna nie ma takiego pola", Klasa Algorithm nie ma pola rankRecomendation, to pole ma User.
+
+5. undef_variable.txt / undef_variable_out.cpp
+
+OPIS: W funkcji wywolanej z poziomu main, zdefiniowana zmienna.
+
+SPODZIEWANY WYNIK: Komunikat o bledzie zapisany do pliku "<-- Zmienna o tej nazwie nie jest zdefiniowana".
+
+6. ret_type.txt / ret_type_out.cpp
+
+OPIS: W funkcji wywolanej z poziomu main, zdefiniowana zmienna typu User, proba przypisania do tej zmiennej wyniku funkcji wbudowanego typu getRecomendation.
+
+SPODZIEWANY WYNIK: Komunikat o bledzie zapisany do pliku "<-- Zmienna przed = nie jest typu zwracanego przez funkcje", funkcja wbudowanego typu getRecomendation zwraca obiekt typu Parh a nie User.
+
+7. string_to_float.txt / string_to_float_out.cpp
+
+OPIS: W funkcji main, zdefiniowana zmienna typu float przypisanie do tej zmiennej lancucha znakow "sss".
+
+SPODZIEWANY WYNIK: Komunikat o bledzie zapisany do pliku "<-- Niezgodnosc typow", w jezyku nie ma przejscia z typu string do typu float.
+
+8. string_to_float.txt / string_to_float_out.cpp
+
+OPIS: W ciele funkcji o zadeklarowanym typie zwracanym string, wyrazenie return 2.
+
+SPODZIEWANY WYNIK: Komunikat o bledzie zapisany do pliku "<-- Niezgodnosc zwracanego typu przez funkcje", w jezyku nie ma przejscia z typu string do typu int.
+
+9. params_num.txt / params_num_out.cpp
+
+OPIS: W mainie wywolanie funkcji o parametrach typow: string, int, float, ale przy wywolaniu jej z poziomu main podane argumenty tylko 2 parametry.
+ 
+SPODZIEWANY WYNIK: Komunikat o bledzie zapisany do pliku, niezgodnosc liczby parametrow.
+
+
+
+
+

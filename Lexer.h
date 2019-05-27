@@ -48,7 +48,6 @@ public:
 
     Token get_token()
     {
-        //cout<<"token: "<<(char)ch<<endl;
         do
         {
             // omijam kazdy znak bialy

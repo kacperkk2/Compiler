@@ -1,0 +1,5 @@
+noret ffunction() {
+	
+	int a = &&;
+}
+

@@ -19,14 +19,8 @@ class Parser
                                         USER_SY, ALGORITHM_SY, PATH_SY, RETURN_SY, ID_SY, PRINT_SY};
     std::list<TOKEN_SY> expr_first_set = {NOT_SY, LPAREN_SY, MINUS_SY, ID_SY,STRING_CONTENT_SY,
                                         NUMBER_FLOAT_SY, NUMBER_INT_SY, TRUE_SY, FALSE_SY};
-    //std::list<TOKEN_SY> logic_set = {OR_SY, AND_SY, NOT_EQUAL_SY, EQUAL_SY, LESS_EQUAL_SY, LESS_SY,
-    //                                GREATER_SY, GREATER_EQUAL_SY};
-    //std::list<TOKEN_SY> arithmetic_set = {MULT_SY, DIV_SY, PLUS_SY, MINUS_SY};
     std::list<TOKEN_SY> value_set = {STRING_CONTENT_SY, NUMBER_FLOAT_SY, NUMBER_INT_SY, TRUE_SY, FALSE_SY};
     std::list<TOKEN_SY> embedded_set = {USER_SY, ALGORITHM_SY, PATH_SY};
-    //std::list<TOKEN_SY> operator_set = {DOT_SY, COMMA_SY, LESS_SY, LESS_EQUAL_SY, GREATER_SY, GREATER_EQUAL_SY, OR_SY, AND_SY,
-    //                                    NOT_EQUAL_SY, EQUAL_SY, MULT_SY, DIV_SY, NOT_SY, ASSIGN_SY,
-    //                                    PLUS_SY, MINUS_SY};
     std::list<TOKEN_SY> algo_attr_set = {pearsonGroupSize_SY, regParameter_SY, lambda_SY};
     std::list<TOKEN_SY> embedded_fun_set = {rankRecomendation_SY, getRecomendation_SY};
 
@@ -488,7 +482,7 @@ public:
         return statement;
     }
 
-    // CONDITION = IF [{ELSEIF}] [ELSE]
+    // CONDITION = IF [ELSE]
     Condition_node* CONDITION()
     {
         Condition_node* c_node = new Condition_node();

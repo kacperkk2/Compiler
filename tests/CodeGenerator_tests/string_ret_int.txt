@@ -1,0 +1,11 @@
+
+@ funkcja zwraca 2 - int a powinna stringa @
+string f()
+{
+	return 2;
+}
+
+noret main() {
+
+	string piec = daj5();
+}

@@ -1,0 +1,13 @@
+
+noret fun(string f, int s, float t)
+{
+	print(f);
+}
+
+noret main() {
+
+	string f = "sss";
+	int s = 2;
+
+	fun(f, s);
+}
