@@ -15,7 +15,7 @@ rekomendowany obiekt, zwracany przez algorytm.
 
 
 ### Obiekty wbudowane
-User:
+##### User:
 Pola
 int id
 float grade
@@ -26,7 +26,7 @@ rankRecomendation(Path) –
 sprawdza na ile dobra jest
 rekomendacja
 
-Algorithm:
+##### Algorithm:
 Pola
 string name
 int pearsonGroupSize
@@ -40,7 +40,7 @@ zwraca rekomendacje w
 oparciu o bieżące parametry
 i algorytm
 
-Path:
+##### Path:
 Pola
 int id
 string country
@@ -54,35 +54,61 @@ obiekcie
 
 ### Opis składni w EBNF
 PROGRAM = {FUNCTION}
+
 FUNCTION = RET_TYPE ID "(" {TYPE ID} ")" "{" {STATEMENT} "}"
+
 STATEMENT = CONDITION | PRINT | LOOP | ASSIGN | DEFINITION | RETURN
 | FUNCTION_CALL
+
 RETURN = "return" EXPRESION ";"
+
 CONDITION = IF [ELSE]
+
 IF = "if" "(" LOGIC ")" "{" {STATEMENT} "}"
+
 ELSEIF = "elseif" "(" LOGIC ")" "{" {STATEMENT} "}"
+
 ELSE = "else" "{" {STATEMENT} "}"
+
 LOOP = "while" "(" LOGIC ")" "{" {STATEMENT} "}"
+
 DEFINITION = TYPE ID ["=" EXPRESION | EMBEDDED_DECL] ";"
+
 ASSIGN = ID "=" (EXPRESION | EMBEDDED_DECL) ";"
+
 EXPRESION = LOGIC | ARITHMETIC | SIMPLY
+
 SIMPLY = VALUE | ID | FUNCTION_CALL | ID “.” (ID | FUNCTION_CALL)
+
 LOGIC = EXPRESION ( "||" | "&&" | "!=" | "==" | "<=" | "<" | ">" | ">=" )
-EXPRESION |
-"~" EXPRESION
+EXPRESION | "~" EXPRESION
+
 ARITHMETIC = EXPRESION ( "+" | "-" | "*" | "/") EXPRESION
+
 FUNCTION_CALL = ID "(" {EXPRESION} ")" ";"
+
 VALUE = STRING | NUMBER | BOOL
+
 BOOL = "true" | "false"
+
 EMBEDDED_DECL = EMBEDDED "(" VALUE ")"
+
 NUMBER = ["-"] DIGIT {DIGIT}
+
 DIGIT = "0" | .. | "9" (każda cyfra)
+
 STRING = ‘ " ’ {CHAR} ‘ " ’
+
 CHAR = "A" | .. | "Z" | "a" | .. | "z" (każda litera alfabetu)
+
 ID = CHAR {CHAR | DIGIT}
+
 RET_TYPE = TYPE | “noret”TYPE = PRIMITIVE | EMBEDDED
+
 EMBEDDED = "User" | "Path" | "Algorithm"
+
 PRIMITIVE = "int" | "float" | "string" | “bool”
+
 PRINT = “print” “(“ ( ID | VALUE) “)” “;”
 
 
@@ -160,11 +186,12 @@ mają plików wynikowych, ponieważ drzewo wypisywane jest na konsolę po
 uruchomieniu poszczególnych wariantów). Moduł źródła nie ma testów,
 ponieważ jest to najprostrzy moduł który wyłącznie pobiera kolejne znaki z
 pliku i błędne wyniki testów lexera zdradzały by błędy źródła.Testy dla poszczególnych modułów:
-Lexer:
+##### Lexer:
 1) Właściwe i niepoprawne identyfikatory
 2) Słowa kluczowe
 3) Operatory
-Parser:
+
+##### Parser:
 1) Pusty plik
 2) Plik bez zdefiniowanych funkcji
 3) Plik składający się z pojedynczej funkcji z instrukcjami
@@ -174,7 +201,8 @@ języka
 6) Wyrażenie logiczne z negacją
 7) Kod łamiący semantyke STATEMENT
 8) Niepoprawne wykorzystanie operatora "."
-Generator kodu:
+
+##### Generator kodu:
 1, 2) Kompletny, poprawny kod
 3) Definicja zmiennej o tej samej nazwie w innych blokach funkcji
 4) Odwołanie do nieistniejącego pola typu wbudowanego
@@ -194,6 +222,7 @@ konsoli wraz z komunikatem, numerem linii i numerem znaku w linii. Błędy
 napotkane na poziomie generatora kodu zostaną dopisane w pliku
 wejściowym - w miejscu wystąpienia błędu zostanie dopisany stosowny
 komunikat.
+
 ### Obiekty wyjściowe
 Program generuje na wyjściu plik źródłowy (.cpp) w języku C++ z
 dołączonymi potrzebnymi bibliotekami: iostream - wypisywanie
@@ -203,8 +232,9 @@ makefile, który kompiluje plik wyjściowy z flagami: -g -Wall -std=c++11.
 
 ### Przykładowy kod pliku wejściowego
 int ffunction(int value, int fvalue) {
-return 3;
+  return 3;
 }
+
 float function2(int fvalue) {
 return 2.99;
 }
