@@ -203,7 +203,8 @@ języka
 8) Niepoprawne wykorzystanie operatora "."
 
 ##### Generator kodu:
-1, 2) Kompletny, poprawny kod
+1) Kompletny, poprawny kod
+2) Kompletny, poprawny kod
 3) Definicja zmiennej o tej samej nazwie w innych blokach funkcji
 4) Odwołanie do nieistniejącego pola typu wbudowanego
 5) Odwołanie do nieistniejącej zmiennej
