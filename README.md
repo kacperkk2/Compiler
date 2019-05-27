@@ -28,6 +28,7 @@ float
 rankRecomendation(Path) –
 sprawdza na ile dobra jest
 rekomendacja
+
 Algorithm:
 Pola
 string name
@@ -41,6 +42,7 @@ dla danego użytkownika
 zwraca rekomendacje w
 oparciu o bieżące parametry
 i algorytm
+
 Path:
 Pola
 int id
@@ -51,13 +53,20 @@ Metody
 Brak metod, nie
 przewidzana jest żadna
 akcja bezpośrednio na tym
-obiekcieOpis składni w EBNF
+obiekcie
+
+Opis składni w EBNF
 PROGRAM = {FUNCTION}
+
 FUNCTION = RET_TYPE ID "(" {TYPE ID} ")" "{" {STATEMENT} "}"
+
 STATEMENT = CONDITION | PRINT | LOOP | ASSIGN | DEFINITION | RETURN
 | FUNCTION_CALL
+
 RETURN = "return" EXPRESION ";"
+
 CONDITION = IF [ELSE]
+
 IF = "if" "(" LOGIC ")" "{" {STATEMENT} "}"
 ELSEIF = "elseif" "(" LOGIC ")" "{" {STATEMENT} "}"
 ELSE = "else" "{" {STATEMENT} "}"
